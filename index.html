@@ -102,16 +102,6 @@
   .gamble-note{font-size:10px;color:var(--dim);margin-top:10px;font-weight:600;position:relative;}
 
   /* ===== WORKOUT ===== */
-  .days{display:flex;gap:7px;overflow-x:auto;padding:12px 0 6px;scrollbar-width:none;}
-  .days::-webkit-scrollbar{display:none;}
-  .day{flex:0 0 auto;min-width:46px;padding:10px 0;text-align:center;background:var(--panel);
-    border:1px solid var(--line);border-radius:13px;font-weight:700;font-size:13px;color:var(--dim);
-    transition:.15s;cursor:pointer;position:relative;}
-  .day small{display:block;font-size:9px;letter-spacing:.12em;margin-top:3px;text-transform:uppercase;font-weight:600;opacity:.8;}
-  .day.active{background:var(--acc);color:#0a0a0a;border-color:var(--acc);}
-  .day .dot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:transparent;}
-  .day.complete .dot{background:var(--acc2);}
-  .day.active.complete .dot{background:#0a0a0a;}
   .head2{display:flex;align-items:flex-end;justify-content:space-between;margin:14px 0 4px;}
   .focus{font-family:'Bebas Neue';font-size:34px;line-height:1;}
   .meta{font-size:12px;color:var(--dim);font-weight:600;text-align:right;}
@@ -183,9 +173,65 @@
   .lvlup .lu-sub{font-size:12px;color:var(--dim);font-weight:500;}
   .lvlup button{margin-top:20px;background:var(--gold);color:#0a0a0a;border:none;padding:12px 30px;
     border-radius:12px;font-family:'Bebas Neue';font-size:20px;letter-spacing:.05em;cursor:pointer;}
+
+  /* ===== FX LAYER ===== */
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:55;}
+  #lvlfx{position:fixed;inset:0;pointer-events:none;z-index:69;}
+  @keyframes shake{
+    0%,100%{transform:translate(0,0);} 15%{transform:translate(-5px,3px);}
+    30%{transform:translate(5px,-3px);} 45%{transform:translate(-5px,-2px);}
+    60%{transform:translate(4px,3px);} 75%{transform:translate(-3px,2px);} 90%{transform:translate(2px,-2px);}
+  }
+  body.shake{animation:shake .42s ease;}
+  body.bigshake{animation:shake .7s ease;}
+
+  /* XP bar shimmer + flash */
+  @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+  .xpbar i{background-size:200% 100%;}
+  .xpbar i.gain{background-image:linear-gradient(90deg,var(--acc),#fff,var(--gold));animation:shimmer .7s linear;}
+  .xpbar.flash{border-color:var(--acc);box-shadow:0 0 16px rgba(214,255,63,.6);}
+
+  /* counter pop */
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(1.35);}100%{transform:scale(1);}}
+  .pop{animation:pop .4s cubic-bezier(.2,1.4,.3,1);display:inline-block;}
+  @keyframes statpop{0%{transform:scale(1);color:#fff;}50%{transform:scale(1.4);}100%{transform:scale(1);}}
+  .statpop{animation:statpop .5s ease;}
+
+  /* avatar idle float + levelup spin */
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+  .avatar{animation:float 3.5s ease-in-out infinite;}
+  @keyframes avspin{0%{transform:scale(1) rotate(0);}50%{transform:scale(1.5) rotate(360deg);}100%{transform:scale(1) rotate(360deg);}}
+  .avatar.celebrate{animation:avspin .8s cubic-bezier(.2,1.3,.3,1);}
+  .hero.rankup{animation:rankglow 1.4s ease;}
+  @keyframes rankglow{0%,100%{box-shadow:none;}50%{box-shadow:0 0 44px rgba(255,194,75,.6);border-color:var(--gold);}}
+
+  /* habit row burst */
+  @keyframes rowflash{0%{background:rgba(214,255,63,.22);}100%{background:transparent;}}
+  .habit.justdone{animation:rowflash .6s ease;border-radius:10px;}
+  .habit .box.checkpop{animation:pop .45s cubic-bezier(.2,1.5,.3,1);}
+
+  /* set tile burst */
+  @keyframes setburst{0%{transform:scale(1);box-shadow:0 0 0 rgba(214,255,63,0);}
+    50%{transform:scale(1.25);box-shadow:0 0 18px rgba(214,255,63,.7);}100%{transform:scale(1.04);}}
+  .set.on.burst{animation:setburst .42s ease;}
+
+  /* slot machine glow while rolling */
+  .slot.rolling{box-shadow:0 0 26px rgba(157,123,255,.5);border-color:var(--purple);}
+  @keyframes jackpot{0%,100%{box-shadow:0 0 26px rgba(255,194,75,.4);}50%{box-shadow:0 0 50px rgba(255,194,75,.9);}}
+  .slot.jackpot{animation:jackpot .5s ease 2;border-color:var(--gold);}
+
+  /* floating +XP text */
+  .floatxp{position:fixed;z-index:62;font-family:'Bebas Neue';font-size:30px;color:var(--gold);
+    pointer-events:none;text-shadow:0 2px 10px rgba(0,0,0,.7);transition:transform 1s ease,opacity 1s ease;}
+
+  /* glow on END DAY when ready */
+  @keyframes readypulse{0%,100%{box-shadow:0 0 0 rgba(214,255,63,0);}50%{box-shadow:0 0 20px rgba(214,255,63,.7);}}
+  .finishbtn:not(.dim){animation:readypulse 1.8s ease-in-out infinite;}
 </style>
 </head>
 <body>
+<canvas id="fx"></canvas>
+<canvas id="lvlfx"></canvas>
 <div class="wrap">
   <header>
     <div class="kick">Life Grind · RPG Mode</div>
@@ -231,8 +277,7 @@
   </div>
 
   <!-- WORKOUT -->
-  <div class="sec-h">Workout <span class="tag">+XP</span></div>
-  <div class="days" id="days"></div>
+  <div class="sec-h">Today's Workout <span class="tag">+XP</span></div>
   <div class="head2"><div class="focus" id="focus">—</div><div class="meta" id="meta"></div></div>
   <div class="prog"><i id="progbar"></i></div>
   <div id="list"></div>
@@ -283,6 +328,140 @@
 </div>
 
 <script>
+/* =========================================================
+   SOUND ENGINE (Web Audio — all synthesized, no files)
+========================================================= */
+const SND = (()=>{
+  let ctx=null, on=true;
+  function ac(){ if(!ctx){ try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return ctx; }
+  function tone(freq,dur,type,vol,when,glideTo){
+    const c=ac(); if(!c||!on) return;
+    const t=c.currentTime+(when||0);
+    const o=c.createOscillator(), g=c.createGain();
+    o.type=type||'sine'; o.frequency.setValueAtTime(freq,t);
+    if(glideTo) o.frequency.exponentialRampToValueAtTime(glideTo,t+dur);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol||0.2,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+0.02);
+  }
+  function noise(dur,vol,when){
+    const c=ac(); if(!c||!on) return;
+    const t=c.currentTime+(when||0);
+    const b=c.createBuffer(1,Math.floor(c.sampleRate*dur),c.sampleRate);
+    const d=b.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const s=c.createBufferSource(); s.buffer=b;
+    const g=c.createGain(); g.gain.setValueAtTime(vol||0.15,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    const f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=1200;
+    s.connect(f); f.connect(g); g.connect(c.destination); s.start(t);
+  }
+  return {
+    resume(){ const c=ac(); if(c&&c.state==='suspended') c.resume(); },
+    tap(){ tone(660,0.06,'triangle',0.12); },
+    check(){ tone(880,0.07,'triangle',0.16); tone(1320,0.09,'sine',0.12,0.05); },
+    uncheck(){ tone(420,0.08,'sine',0.1,0,300); },
+    xp(){ tone(1046,0.07,'triangle',0.14); tone(1568,0.08,'sine',0.10,0.04); },
+    set(){ tone(784,0.05,'square',0.08); tone(1175,0.07,'triangle',0.10,0.03); },
+    spinTick(){ tone(500+Math.random()*400,0.03,'square',0.05); },
+    jackpot(){ [523,659,784,1046,1318].forEach((f,i)=>tone(f,0.5,'triangle',0.16,i*0.07)); noise(0.3,0.08,0); },
+    workoutDone(){ [523,659,784].forEach((f,i)=>tone(f,0.18,'triangle',0.16,i*0.08)); },
+    levelup(){
+      const seq=[523,659,784,1046,1318,1568];
+      seq.forEach((f,i)=>tone(f,0.22,'triangle',0.18,i*0.09));
+      tone(2093,0.6,'sine',0.14,seq.length*0.09);
+      noise(0.25,0.06,0);
+    },
+    rankup(){
+      const seq=[392,523,659,784,1046,1318,1568,2093];
+      seq.forEach((f,i)=>{ tone(f,0.3,'sawtooth',0.10,i*0.08); tone(f*1.5,0.3,'sine',0.08,i*0.08); });
+      noise(0.4,0.1,0);
+    },
+    error(){ tone(200,0.15,'sawtooth',0.12,0,140); }
+  };
+})();
+
+/* =========================================================
+   PARTICLE SYSTEM (canvas)
+========================================================= */
+const FX = (()=>{
+  const cv=document.getElementById('fx'), x=cv.getContext('2d');
+  const lv=document.getElementById('lvlfx'), lx=lv.getContext('2d');
+  let parts=[], lparts=[], raf=null, lraf=null;
+  function size(){ [cv,lv].forEach(c=>{c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';}); x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); lx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+  addEventListener('resize',size); size();
+  const COLORS=['#d6ff3f','#ffc24b','#ff5e3a','#9d7bff','#4bc5ff','#ffffff'];
+  function burst(px,py,n,opt){
+    opt=opt||{};
+    for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2, sp=(opt.speed||3)*(0.4+Math.random());
+      parts.push({x:px,y:py,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(opt.up||1.5),
+        g:opt.g||0.12,life:1,dec:0.012+Math.random()*0.02,
+        size:(opt.size||4)*(0.6+Math.random()),
+        col:opt.col||COLORS[Math.floor(Math.random()*COLORS.length)],
+        shape:opt.shape||(Math.random()<0.5?'rect':'circle'),rot:Math.random()*6,vr:(Math.random()-0.5)*0.3});
+    }
+    if(!raf) loop();
+  }
+  function loop(){
+    x.clearRect(0,0,cv.width,cv.height);
+    parts=parts.filter(p=>p.life>0);
+    parts.forEach(p=>{
+      p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.life-=p.dec; p.rot+=p.vr;
+      x.save(); x.globalAlpha=Math.max(0,p.life); x.translate(p.x,p.y); x.rotate(p.rot); x.fillStyle=p.col;
+      if(p.shape==='rect') x.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.6);
+      else{ x.beginPath(); x.arc(0,0,p.size/2,0,7); x.fill(); }
+      x.restore();
+    });
+    if(parts.length) raf=requestAnimationFrame(loop); else { x.clearRect(0,0,cv.width,cv.height); raf=null; }
+  }
+  function confetti(dur){
+    const end=performance.now()+dur;
+    function rain(){
+      for(let i=0;i<5;i++) lparts.push({x:Math.random()*innerWidth,y:-10,
+        vx:(Math.random()-0.5)*2,vy:2+Math.random()*3,g:0.04,life:1,dec:0.004,
+        size:5+Math.random()*5,col:COLORS[Math.floor(Math.random()*COLORS.length)],
+        rot:Math.random()*6,vr:(Math.random()-0.5)*0.4,shape:Math.random()<0.5?'rect':'circle'});
+      if(performance.now()<end) setTimeout(rain,40);
+    }
+    rain();
+    if(!lraf) lloop();
+  }
+  function lloop(){
+    lx.clearRect(0,0,lv.width,lv.height);
+    lparts=lparts.filter(p=>p.life>0&&p.y<innerHeight+20);
+    lparts.forEach(p=>{ p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.life-=p.dec;p.rot+=p.vr;
+      lx.save();lx.globalAlpha=Math.max(0,p.life);lx.translate(p.x,p.y);lx.rotate(p.rot);lx.fillStyle=p.col;
+      if(p.shape==='rect')lx.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.6);
+      else{lx.beginPath();lx.arc(0,0,p.size/2,0,7);lx.fill();}
+      lx.restore();
+    });
+    if(lparts.length) lraf=requestAnimationFrame(lloop); else { lx.clearRect(0,0,lv.width,lv.height); lraf=null; }
+  }
+  return {burst,confetti,
+    fromEl(el,n,opt){ if(!el)return; const b=el.getBoundingClientRect(); burst(b.left+b.width/2,b.top+b.height/2,n||20,opt); }
+  };
+})();
+
+function floatXP(el,txt,col){
+  if(!el) return;
+  const b=el.getBoundingClientRect();
+  const f=document.createElement('div');
+  f.className='floatxp'; f.textContent=txt; f.style.color=col||'#ffc24b';
+  f.style.left=(b.left+b.width/2-20)+'px'; f.style.top=(b.top-6)+'px';
+  document.body.appendChild(f);
+  requestAnimationFrame(()=>{ f.style.transform='translateY(-50px)'; f.style.opacity='0'; });
+  setTimeout(()=>f.remove(),1000);
+}
+function shake(big){ document.body.classList.remove('shake','bigshake'); void document.body.offsetWidth;
+  document.body.classList.add(big?'bigshake':'shake'); setTimeout(()=>document.body.classList.remove('shake','bigshake'),750); }
+
+(function(){
+  const unlock=()=>{ SND.resume(); document.removeEventListener('touchstart',unlock); document.removeEventListener('click',unlock); };
+  document.addEventListener('touchstart',unlock); document.addEventListener('click',unlock);
+})();
+
 /* =========================================================
    DATA
 ========================================================= */
@@ -384,7 +563,7 @@ if(store.level===undefined) store.level=1;
 if(store.totalXp===undefined) store.totalXp=0;
 if(!store.stats) store.stats={body:0,mind:0,grit:0,home:0};
 if(!store.habits) store.habits={};
-if(store.beardLast===undefined) store.beardLast=null; // day-count when beard last done
+if(store.beardLastDate===undefined) store.beardLastDate=null; // calendar date beard last done
 if(store.dayCount===undefined) store.dayCount=0;      // total distinct days opened
 if(store.streak===undefined) store.streak=0;
 if(!store.gamble) store.gamble={day:null,rolled:null,claimed:false};
@@ -407,7 +586,10 @@ function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.get
     store.habits = {};
     store.dayCount = (store.dayCount||0)+1;
     store.gamble = {day:todayStr(), rolled:null, claimed:false};
-    // mark workout day not-done for fresh visual (keep weekly handled separately)
+    // clear THIS weekday's workout checkmarks + done flag so the session is fresh
+    const wd = (new Date().getDay()+6)%7;
+    delete store['done_'+wd];
+    Object.keys(store).forEach(k=>{ if(k.indexOf('d'+wd+'_e')===0) delete store[k]; });
     save();
   }
   if(store.gamble.day!==todayStr()) store.gamble={day:todayStr(),rolled:null,claimed:false};
@@ -452,11 +634,26 @@ function revokeXP(amount, stat){
 }
 
 /* =========================================================
-   HERO RENDER
+   HERO RENDER (with animated counters)
 ========================================================= */
-function renderHero(){
+function tweenNum(el,to,dur){
+  if(!el) return;
+  const from=parseInt((el.textContent||'0').replace(/[^0-9]/g,''))||0;
+  if(from===to){ el.textContent=to.toLocaleString(); return; }
+  const start=performance.now(); dur=dur||500;
+  function step(now){
+    const t=Math.min(1,(now-start)/dur);
+    const e=1-Math.pow(1-t,3);
+    el.textContent=Math.round(from+(to-from)*e).toLocaleString();
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+let lastRank=null, lastLevel=null;
+function renderHero(animate){
   const r=rankFor(store.level);
-  document.getElementById('avatar').textContent=r.av;
+  const av=document.getElementById('avatar');
+  av.textContent=r.av;
   document.getElementById('rank').textContent=r.name;
   document.getElementById('lvlNum').textContent=store.level;
   document.getElementById('title').textContent=r.title;
@@ -464,8 +661,15 @@ function renderHero(){
   const curXp=store.level>=MAX_LEVEL?1:store.xp;
   document.getElementById('xpCur').textContent=curXp;
   document.getElementById('xpNeed').textContent=store.level>=MAX_LEVEL?'MAX':need;
-  document.getElementById('xpFill').style.width=(store.level>=MAX_LEVEL?100:(curXp/need*100))+'%';
-  document.getElementById('xpTotal').textContent=store.totalXp.toLocaleString();
+  const fill=document.getElementById('xpFill');
+  fill.style.width=(store.level>=MAX_LEVEL?100:(curXp/need*100))+'%';
+  if(animate){
+    fill.classList.remove('gain'); void fill.offsetWidth; fill.classList.add('gain');
+    const bar=fill.parentElement; bar.classList.add('flash'); setTimeout(()=>bar.classList.remove('flash'),400);
+    tweenNum(document.getElementById('xpTotal'),store.totalXp);
+  } else {
+    document.getElementById('xpTotal').textContent=store.totalXp.toLocaleString();
+  }
   document.getElementById('stBody').textContent=store.stats.body;
   document.getElementById('stMind').textContent=store.stats.mind;
   document.getElementById('stGrit').textContent=store.stats.grit;
@@ -473,10 +677,16 @@ function renderHero(){
   document.getElementById('fLvl').textContent=store.level;
   document.getElementById('fRank').textContent=r.name;
   document.getElementById('fStreak').textContent=store.streak||0;
+  lastRank=r.name; lastLevel=store.level;
+}
+function bumpStat(stat){
+  const id={body:'stBody',mind:'stMind',grit:'stGrit',home:'stHome'}[stat];
+  const el=document.getElementById(id); if(!el) return;
+  el.classList.remove('statpop'); void el.offsetWidth; el.classList.add('statpop');
 }
 
 /* =========================================================
-   FEEDBACK (toast + levelup modal)
+   FEEDBACK (toast + levelup modal + FX)
 ========================================================= */
 let toastT=null;
 function toast(msg){
@@ -486,30 +696,48 @@ function toast(msg){
   clearTimeout(toastT);
   toastT=setTimeout(()=>el.classList.remove('show'),1700);
 }
-function showLevelUp(){
+function showLevelUp(rankChanged){
   const r=rankFor(store.level);
   document.getElementById('luLvl').textContent=store.level;
   document.getElementById('luRank').textContent=r.name+' · '+r.title;
   document.getElementById('luSub').textContent=store.level>=MAX_LEVEL?'You have reached the summit. Maximum level.':'Next level needs '+xpForLevel(store.level)+' XP.';
+  document.querySelector('.lu-k').textContent=rankChanged?'New Rank Unlocked':'Level Up';
   document.getElementById('lvlup').classList.add('show');
-  if(navigator.vibrate) navigator.vibrate([20,50,20,50,60]);
+  // avatar celebration
+  const av=document.getElementById('avatar');
+  av.classList.remove('celebrate'); void av.offsetWidth; av.classList.add('celebrate');
+  const hero=document.querySelector('.hero');
+  if(rankChanged){ hero.classList.remove('rankup'); void hero.offsetWidth; hero.classList.add('rankup'); }
+  // fx
+  FX.confetti(rankChanged?2200:1300);
+  setTimeout(()=>FX.burst(innerWidth/2,innerHeight/2,rankChanged?80:50,{speed:7,up:2,size:6}),60);
+  shake(rankChanged);
+  if(rankChanged) SND.rankup(); else SND.levelup();
+  if(navigator.vibrate) navigator.vibrate(rankChanged?[30,60,30,60,30,60,80]:[20,50,20,50,60]);
 }
-document.getElementById('luClose').onclick=()=>document.getElementById('lvlup').classList.remove('show');
+document.getElementById('luClose').onclick=()=>{ SND.tap(); document.getElementById('lvlup').classList.remove('show'); };
 
-function award(amount,stat,label){
+function award(amount,stat,label,srcEl){
   const res=grantXP(amount,stat);
-  if(res.leveled){ renderHero(); showLevelUp(); }
-  else { toast('<span class="tg">+'+amount+' XP</span> &nbsp;'+label); renderHero(); }
+  bumpStat(stat);
+  if(srcEl) { FX.fromEl(srcEl,16,{speed:4,up:1.5}); floatXP(srcEl,'+'+amount,'#ffc24b'); }
+  if(res.leveled){ renderHero(true); showLevelUp(!!res.newRankName); }
+  else { toast('<span class="tg">+'+amount+' XP</span> &nbsp;'+label); renderHero(true); SND.xp(); }
   if(navigator.vibrate) navigator.vibrate(10);
 }
 
 /* =========================================================
    HABITS
 ========================================================= */
+function daysBetween(aStr,bStr){
+  // whole days from aStr to bStr (both YYYY-MM-DD)
+  const a=new Date(aStr+'T00:00:00'), b=new Date(bStr+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
 function beardDue(){
-  // due if never done, or it's been >= cycle days since last done
-  if(store.beardLast===null) return true;
-  return (store.dayCount - store.beardLast) >= 3;
+  // due if never done, or it's been >= 3 calendar days since last done
+  if(!store.beardLastDate) return true;
+  return daysBetween(store.beardLastDate, todayStr()) >= 3;
 }
 function renderHabits(){
   const dow=new Date().getDay();
@@ -535,20 +763,33 @@ function renderHabits(){
     if(h.id==='dishes') dueTag='<span class="due" style="color:var(--purple);border-color:var(--purple)">end of day</span>';
     row.innerHTML=`<div class="box">${on?'✓':''}</div><div class="ic">${h.ic}</div>
       <div class="lbl2">${h.t} ${dueTag}</div><div class="xp">+${h.xp}</div>`;
-    row.onclick=()=>toggleHabit(h);
+    row.onclick=()=>toggleHabit(h,row);
     hl.appendChild(row);
   });
   document.getElementById('habitsDate').firstChild.textContent=names[dow].toUpperCase()+' ';
   document.getElementById('habitCount').textContent=done+'/'+list.length;
 }
-function toggleHabit(h){
+function toggleHabit(h,row){
   const on=!store.habits[h.id];
   store.habits[h.id]=on;
-  if(h.id==='beard'){ store.beardLast = on ? store.dayCount : store.beardLast; }
+  if(h.id==='beard'){
+    if(on){ store.beardLastDate = todayStr(); }
+    else if(store.beardLastDate===todayStr()){ store.beardLastDate=null; } // undo today's mark
+  }
   save();
-  if(on) award(h.xp,h.stat,h.t);
-  else revokeXP(h.xp,h.stat);
-  renderHabits(); renderHero();
+  if(on){
+    const box=row?row.querySelector('.box'):null;
+    if(box){ box.classList.add('checkpop'); }
+    if(row){ row.classList.add('justdone'); }
+    SND.check();
+    award(h.xp,h.stat,h.t,row?row.querySelector('.box'):null);
+  } else {
+    SND.uncheck();
+    revokeXP(h.xp,h.stat);
+    renderHero();
+  }
+  // re-render after the flash so animation is visible briefly
+  setTimeout(()=>{ renderHabits(); },420);
 }
 
 /* =========================================================
@@ -568,10 +809,9 @@ function renderGamble(){
   }
   if(g.rolled){
     slot.innerHTML=`<div class="chore">${g.rolled.t}</div><div class="chore-xp">Reward: +${g.rolled.xp} XP</div>`;
-    btns.innerHTML=`<button class="gbtn sec" id="rerollBtn">RESPIN</button><button class="gbtn claim" id="claimBtn">I DID IT ✓</button>`;
-    note.textContent='Respin if you want a different one — but you only claim once per day.';
+    btns.innerHTML=`<button class="gbtn claim" id="claimBtn">I DID IT ✓</button>`;
+    note.textContent='No respins — this is your chore for today. Claim it once you actually do it.';
     document.getElementById('claimBtn').onclick=claimChore;
-    document.getElementById('rerollBtn').onclick=spin;
     return;
   }
   slot.innerHTML=`<span class="placeholder">— PULL THE LEVER —</span>`;
@@ -582,30 +822,46 @@ function renderGamble(){
 function spin(){
   if(rolling) return;
   rolling=true;
+  SND.resume();
   const slot=document.getElementById('slot');
+  const rb=document.getElementById('rollBtn'); if(rb) rb.disabled=true;
   slot.classList.add('rolling');
-  let ticks=0;const total=18+Math.floor(Math.random()*8);
-  const iv=setInterval(()=>{
+  let ticks=0;const total=20+Math.floor(Math.random()*8);
+  let delay=45;
+  function tickOnce(){
     const c=CHORES[Math.floor(Math.random()*CHORES.length)];
     slot.innerHTML=`<div class="chore">${c.t}</div><div class="chore-xp">Reward: +${c.xp} XP</div>`;
-    if(navigator.vibrate) navigator.vibrate(4);
+    SND.spinTick();
+    if(navigator.vibrate) navigator.vibrate(3);
     ticks++;
     if(ticks>=total){
-      clearInterval(iv);
       const final=CHORES[Math.floor(Math.random()*CHORES.length)];
       store.gamble.rolled=final; store.gamble.claimed=false; save();
       slot.classList.remove('rolling');
+      slot.classList.add('jackpot');
+      setTimeout(()=>slot.classList.remove('jackpot'),1000);
       rolling=false;
+      SND.jackpot();
+      FX.fromEl(slot,40,{speed:6,up:2,size:5});
+      shake(false);
+      if(navigator.vibrate) navigator.vibrate([10,40,30,40,60]);
       renderGamble();
-      if(navigator.vibrate) navigator.vibrate([10,40,30]);
+      return;
     }
-  },70);
+    // ease-out: slow down near the end
+    if(ticks>total*0.6) delay+=14;
+    setTimeout(tickOnce,delay);
+  }
+  tickOnce();
 }
 function claimChore(){
   const g=store.gamble;
   if(!g.rolled||g.claimed) return;
   g.claimed=true; save();
-  award(g.rolled.xp, g.rolled.stat, g.rolled.t);
+  const slot=document.getElementById('slot');
+  SND.workoutDone();
+  FX.fromEl(slot,30,{speed:5,up:2});
+  award(g.rolled.xp, g.rolled.stat, g.rolled.t, slot);
   renderGamble();
 }
 
@@ -617,18 +873,11 @@ function key(di,ei){ return `d${di}_e${ei}`; }
 const SET_XP=4; // xp per set
 
 function render(){
-  const days=document.getElementById('days');
-  days.innerHTML='';
-  PLAN.forEach((p,i)=>{
-    const el=document.createElement('div');
-    el.className='day'+(i===cur?' active':'')+(store['done_'+i]?' complete':'');
-    el.innerHTML=`${p.d}<small>${p.focus.split(' ')[0]}</small><span class="dot"></span>`;
-    el.onclick=()=>{cur=i;render();};
-    days.appendChild(el);
-  });
+  cur = (new Date().getDay()+6)%7; // always today (Mon=0)
   const p=PLAN[cur];
   document.getElementById('focus').textContent=p.focus;
-  document.getElementById('meta').innerHTML=`${p.d} · ${p.ex.length} lifts<br><b>${p.time}</b>`;
+  const fullDay=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][cur];
+  document.getElementById('meta').innerHTML=`${fullDay} · ${p.ex.length} lifts<br><b>${p.time}</b>`;
   const list=document.getElementById('list');
   list.innerHTML='';
   let totalSets=0,doneSets=0;
@@ -650,9 +899,18 @@ function render(){
       const k=key(cur,b.dataset.e)+'_s'+b.dataset.s;
       const wasOn=store[k];
       store[k]=!wasOn; save();
-      if(!wasOn) award(SET_XP,'body','set done');
-      else revokeXP(SET_XP,'body');
-      render();
+      if(!wasOn){
+        b.classList.add('on','burst');
+        FX.fromEl(b,10,{speed:3,up:1,size:3});
+        SND.set();
+        award(SET_XP,'body','set done',b);
+        setTimeout(()=>render(),320);
+      } else {
+        SND.uncheck();
+        revokeXP(SET_XP,'body');
+        renderHero();
+        render();
+      }
     };
   });
   document.getElementById('progbar').style.width=(totalSets?doneSets/totalSets*100:0)+'%';
@@ -665,9 +923,19 @@ function render(){
 
 document.getElementById('finish').onclick=()=>{
   const wasDone=store['done_'+cur];
+  const fb=document.getElementById('finish');
   store['done_'+cur]=!wasDone; save();
-  if(!wasDone) award(30,'grit','workout complete!');
-  else revokeXP(30,'grit');
+  if(!wasDone){
+    SND.workoutDone();
+    FX.fromEl(fb,40,{speed:6,up:2,size:5});
+    FX.confetti(900);
+    shake(false);
+    award(30,'grit','WORKOUT COMPLETE!',fb);
+  } else {
+    SND.uncheck();
+    revokeXP(30,'grit');
+    renderHero();
+  }
   render();
 };
 document.getElementById('wipe').onclick=()=>{
@@ -691,8 +959,9 @@ document.getElementById('exportBtn').onclick=()=>{
     ta.value=code;
     ta.select();
     try{ document.execCommand('copy'); }catch(e){}
+    SND.check();
     toast('<span class="tg">Backup ready</span> &nbsp;copied — save it somewhere');
-  }catch(e){ toast('Export failed'); }
+  }catch(e){ SND.error(); toast('Export failed'); }
 };
 document.getElementById('importBtn').onclick=()=>{
   const code=document.getElementById('backupText').value.trim();
@@ -704,7 +973,7 @@ document.getElementById('importBtn').onclick=()=>{
     localStorage.setItem('dailygrind_rpg', JSON.stringify(data));
     toast('<span class="tg">Restored!</span> &nbsp;reloading…');
     setTimeout(()=>location.reload(),700);
-  }catch(e){ toast('Invalid backup code'); }
+  }catch(e){ SND.error(); toast('Invalid backup code'); }
 };
 
 /* =========================================================
@@ -714,10 +983,13 @@ let tLeft=60,tInt=null;
 const tEl=document.getElementById('timer');
 function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function tick(){tLeft--;tEl.textContent=fmt(Math.max(tLeft,0));
+  if(tLeft<=3&&tLeft>0){ SND.tap(); }
   if(tLeft<=0){clearInterval(tInt);tInt=null;tEl.style.color='var(--acc2)';
+    SND.workoutDone();
     if(navigator.vibrate)navigator.vibrate([20,60,20,60,20]);
     document.getElementById('startT').textContent='Start 60s';}}
 document.getElementById('startT').onclick=function(){
+  SND.resume();
   if(tInt){clearInterval(tInt);tInt=null;this.textContent='Start 60s';return;}
   if(tLeft<=0)tLeft=60;tEl.style.color='';tEl.textContent=fmt(tLeft);
   tInt=setInterval(tick,1000);this.textContent='Pause';};
