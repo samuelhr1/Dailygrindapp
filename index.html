@@ -18,7 +18,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{background:var(--bg);color:var(--txt);font-family:'Archivo',sans-serif;}
-  body{min-height:100vh;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 90px);
+  body{min-height:100vh;padding:calc(env(safe-area-inset-top) + 12px) 0 calc(env(safe-area-inset-bottom) + 96px);
     background-image:radial-gradient(circle at 50% -10%, rgba(214,255,63,.06), transparent 60%);}
   .wrap{max-width:520px;margin:0 auto;padding:0 18px;}
   header{padding:22px 0 6px;}
@@ -139,6 +139,18 @@
     padding:9px 16px;border-radius:11px;font-family:'Archivo';font-weight:600;font-size:12px;cursor:pointer;}
   .hardreset{margin:10px auto 0;display:block;background:none;border:none;color:#444;font-size:11px;text-decoration:underline;cursor:pointer;}
 
+  /* ===== BACKUP ===== */
+  .backup{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:22px;}
+  .backup-h{font-family:'Bebas Neue';font-size:22px;letter-spacing:.02em;color:var(--blue);}
+  .backup-p{font-size:12px;color:var(--dim);line-height:1.5;font-weight:500;margin:6px 0 13px;}
+  .bbtns{display:flex;gap:9px;}
+  .bbtns button{flex:1;padding:12px;border:none;border-radius:11px;font-family:'Archivo';font-weight:800;
+    font-size:13px;letter-spacing:.04em;cursor:pointer;background:var(--blue);color:#0a0a0a;}
+  .bbtns button.sec{background:var(--panel2);color:var(--txt);border:1px solid var(--line);}
+  #backupText{width:100%;margin-top:11px;min-height:64px;background:#000;border:1px solid var(--line);
+    border-radius:11px;color:var(--acc);font-family:monospace;font-size:11px;padding:11px;resize:vertical;
+    word-break:break-all;line-height:1.4;}
+
   /* ===== FOOTER ===== */
   .foot{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.92);backdrop-filter:blur(14px);
     border-top:1px solid var(--line);padding:11px 18px calc(11px + env(safe-area-inset-bottom));}
@@ -192,7 +204,8 @@
       </div>
     </div>
     <div class="xpbar"><i id="xpFill"></i></div>
-    <div class="xpmeta"><span><b id="xpCur">0</b> / <span id="xpNeed">100</span> XP</span><span class="total-xp">Total earned: <b id="xpTotal">0</b></span></div>
+    <div class="xpmeta"><span><b id="xpCur">0</b> / <span id="xpNeed">100</span> XP to next level</span></div>
+    <div class="total-xp" style="text-align:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);">Lifetime XP earned: <b id="xpTotal">0</b></div>
     <div class="stats">
       <div class="stat body"><div class="sv" id="stBody">0</div><div class="sn">Body</div></div>
       <div class="stat mind"><div class="sv" id="stMind">0</div><div class="sn">Mind</div></div>
@@ -235,6 +248,17 @@
   </div>
 
   <div class="note" id="note"></div>
+
+  <div class="backup" id="backupBox">
+    <div class="backup-h">⛊ Backup your character</div>
+    <div class="backup-p">Your progress saves automatically on this device. But before you edit the code, get a new phone, or change your site URL — export a backup code and keep it somewhere safe. You can paste it back anytime to restore everything.</div>
+    <div class="bbtns">
+      <button id="exportBtn">EXPORT BACKUP</button>
+      <button id="importBtn" class="sec">IMPORT BACKUP</button>
+    </div>
+    <textarea id="backupText" placeholder="Your backup code appears here after export. To restore: paste a code here, then tap Import." spellcheck="false"></textarea>
+  </div>
+
   <button class="reset" id="wipe">Reset today's workout checkmarks</button>
   <button class="hardreset" id="hardreset">Erase ALL progress (character, levels, everything)</button>
 </div>
@@ -295,6 +319,7 @@ const HABITS = [
   {id:"lunch",    ic:"🍱", t:"Pack work lunch", xp:12, stat:"grit", workOnly:true},
   {id:"exercise", ic:"🏋️", t:"Daily exercise",          xp:25, stat:"body"},
   {id:"beard",    ic:"🧔", t:"Trim / do beard", xp:16, stat:"grit", cycle:3},
+  {id:"drycleaning",ic:"👔", t:"Dry cleaning — drop off / pick up", xp:14, stat:"home", satOnly:true},
   {id:"dishes",   ic:"🍽️", t:"Wash the dishes",          xp:18, stat:"home"},
   {id:"teeth_pm", ic:"🌙", t:"Brush teeth — evening",   xp:8,  stat:"grit"},
 ];
@@ -492,6 +517,7 @@ function renderHabits(){
   const names=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const list=HABITS.filter(h=>{
     if(h.workOnly && !isWorkday) return false;
+    if(h.satOnly && dow!==6) return false; // Saturday only
     if(h.id==='beard' && !beardDue() && !store.habits['beard']) return false; // hide until due
     return true;
   });
@@ -505,6 +531,7 @@ function renderHabits(){
     row.className='habit'+(on?' on':'');
     let dueTag='';
     if(h.id==='beard') dueTag='<span class="due">3-day</span>';
+    if(h.id==='drycleaning') dueTag='<span class="due" style="color:var(--blue);border-color:var(--blue)">Saturday</span>';
     if(h.id==='dishes') dueTag='<span class="due" style="color:var(--purple);border-color:var(--purple)">end of day</span>';
     row.innerHTML=`<div class="box">${on?'✓':''}</div><div class="ic">${h.ic}</div>
       <div class="lbl2">${h.t} ${dueTag}</div><div class="xp">+${h.xp}</div>`;
@@ -654,6 +681,30 @@ document.getElementById('hardreset').onclick=()=>{
     localStorage.removeItem('dailygrind_rpg');
     location.reload();
   }
+};
+
+/* ===== BACKUP / RESTORE ===== */
+document.getElementById('exportBtn').onclick=()=>{
+  try{
+    const code=btoa(unescape(encodeURIComponent(JSON.stringify(store))));
+    const ta=document.getElementById('backupText');
+    ta.value=code;
+    ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    toast('<span class="tg">Backup ready</span> &nbsp;copied — save it somewhere');
+  }catch(e){ toast('Export failed'); }
+};
+document.getElementById('importBtn').onclick=()=>{
+  const code=document.getElementById('backupText').value.trim();
+  if(!code){ toast('Paste a backup code first'); return; }
+  if(!confirm('Restore from this backup? It will replace your current progress on this device.')) return;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(code))));
+    if(typeof data.level!=='number'||typeof data.totalXp!=='number') throw new Error('bad');
+    localStorage.setItem('dailygrind_rpg', JSON.stringify(data));
+    toast('<span class="tg">Restored!</span> &nbsp;reloading…');
+    setTimeout(()=>location.reload(),700);
+  }catch(e){ toast('Invalid backup code'); }
 };
 
 /* =========================================================
