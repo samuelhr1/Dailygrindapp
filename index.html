@@ -6,112 +6,222 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0a">
-<title>DAILY · Dumbbell Split</title>
+<title>DAILY GRIND · RPG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0a0a;
-    --panel:#141414;
-    --panel2:#1c1c1c;
-    --line:#2a2a2a;
-    --txt:#f2f2f0;
-    --dim:#7d7d78;
-    --acc:#d6ff3f;
-    --acc2:#ff5e3a;
-    --done:#1f3a1a;
+    --bg:#0a0a0a; --panel:#141414; --panel2:#1c1c1c; --line:#2a2a2a;
+    --txt:#f2f2f0; --dim:#7d7d78; --acc:#d6ff3f; --acc2:#ff5e3a;
+    --done:#1f3a1a; --gold:#ffc24b; --purple:#9d7bff; --blue:#4bc5ff;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{background:var(--bg);color:var(--txt);font-family:'Archivo',sans-serif;}
-  body{
-    min-height:100vh;
-    padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 90px);
-    background-image:radial-gradient(circle at 50% -10%, rgba(214,255,63,.06), transparent 60%);
-  }
+  body{min-height:100vh;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 90px);
+    background-image:radial-gradient(circle at 50% -10%, rgba(214,255,63,.06), transparent 60%);}
   .wrap{max-width:520px;margin:0 auto;padding:0 18px;}
-
-  header{padding:26px 0 14px;}
-  .kick{font-family:'Archivo';font-size:11px;letter-spacing:.32em;color:var(--acc);font-weight:700;text-transform:uppercase;}
-  h1{font-family:'Bebas Neue';font-size:54px;line-height:.9;letter-spacing:.01em;margin-top:4px;}
+  header{padding:22px 0 6px;}
+  .kick{font-size:11px;letter-spacing:.32em;color:var(--acc);font-weight:700;text-transform:uppercase;}
+  h1{font-family:'Bebas Neue';font-size:50px;line-height:.9;letter-spacing:.01em;margin-top:4px;}
   .sub{color:var(--dim);font-size:13px;margin-top:8px;font-weight:500;}
 
-  .days{display:flex;gap:7px;overflow-x:auto;padding:18px 0 6px;scrollbar-width:none;}
+  /* ===== CHARACTER CARD ===== */
+  .hero{background:linear-gradient(160deg,#181818,#101010);border:1px solid var(--line);
+    border-radius:20px;padding:18px;margin-top:18px;position:relative;overflow:hidden;}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(214,255,63,.10),transparent 55%);pointer-events:none;}
+  .hero-top{display:flex;align-items:center;gap:14px;position:relative;}
+  .avatar{width:58px;height:58px;border-radius:16px;background:linear-gradient(145deg,var(--acc),var(--acc2));
+    display:flex;align-items:center;justify-content:center;font-size:30px;flex:0 0 auto;
+    box-shadow:0 0 22px rgba(214,255,63,.25);}
+  .hero-id{flex:1;min-width:0;}
+  .rank{font-size:11px;letter-spacing:.16em;font-weight:800;text-transform:uppercase;color:var(--gold);}
+  .lvlrow{display:flex;align-items:baseline;gap:8px;margin-top:1px;}
+  .lvl-num{font-family:'Bebas Neue';font-size:40px;line-height:.9;}
+  .lvl-word{font-size:12px;color:var(--dim);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+  .title{font-size:12px;color:var(--purple);font-weight:700;margin-top:2px;}
+
+  .xpbar{height:9px;background:#000;border:1px solid var(--line);border-radius:7px;margin-top:14px;overflow:hidden;position:relative;}
+  .xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--gold));
+    box-shadow:0 0 12px rgba(214,255,63,.5);transition:width .5s cubic-bezier(.2,.9,.3,1);}
+  .xpmeta{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700;color:var(--dim);}
+  .xpmeta b{color:var(--acc);}
+  .total-xp{font-size:11px;color:var(--dim);font-weight:600;}
+  .total-xp b{color:var(--gold);}
+
+  /* ===== STATS ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;position:relative;}
+  .stat{background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:9px 6px;text-align:center;}
+  .stat .sv{font-family:'Bebas Neue';font-size:26px;line-height:1;}
+  .stat .sn{font-size:9px;letter-spacing:.1em;color:var(--dim);font-weight:800;text-transform:uppercase;margin-top:2px;}
+  .stat.body .sv{color:var(--acc2);}
+  .stat.mind .sv{color:var(--blue);}
+  .stat.grit .sv{color:var(--gold);}
+  .stat.home .sv{color:var(--purple);}
+
+  /* ===== SECTION HEADS ===== */
+  .sec-h{font-family:'Bebas Neue';font-size:26px;letter-spacing:.02em;margin:24px 0 0;display:flex;align-items:center;gap:9px;}
+  .sec-h .tag{font-size:10px;font-family:'Archivo';font-weight:800;letter-spacing:.1em;color:#0a0a0a;
+    background:var(--acc);border-radius:6px;padding:3px 7px;text-transform:uppercase;}
+
+  /* ===== HABITS ===== */
+  .habits{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:6px 15px;margin-top:12px;}
+  .habit{display:flex;align-items:center;gap:12px;padding:12px 2px;border-top:1px solid var(--line);cursor:pointer;}
+  .habit:first-child{border-top:none;}
+  .habit .box{width:25px;height:25px;border-radius:8px;border:2px solid var(--line);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;font-size:14px;color:#0a0a0a;transition:.12s;font-weight:800;}
+  .habit.on .box{background:var(--acc);border-color:var(--acc);}
+  .habit .ic{font-size:19px;width:24px;text-align:center;}
+  .habit .lbl2{font-weight:600;font-size:15px;flex:1;}
+  .habit.on .lbl2{color:var(--dim);text-decoration:line-through;}
+  .habit .xp{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.03em;}
+  .habit.on .xp{color:#5a5a52;}
+  .habit .due{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);
+    border:1px solid var(--acc2);border-radius:5px;padding:2px 5px;margin-left:2px;}
+  .habit.rest{opacity:.5;}
+  .habit.rest .due{color:var(--dim);border-color:var(--line);}
+
+  /* ===== GAMBLE ===== */
+  .gamble{background:linear-gradient(160deg,#1a1320,#120d16);border:1px solid #3a2748;
+    border-radius:18px;padding:18px;margin-top:12px;text-align:center;position:relative;overflow:hidden;}
+  .gamble::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(157,123,255,.16),transparent 60%);pointer-events:none;}
+  .gamble h3{font-family:'Bebas Neue';font-size:30px;letter-spacing:.03em;position:relative;}
+  .gamble p{font-size:12px;color:var(--dim);font-weight:500;margin:4px 0 14px;position:relative;}
+  .slot{background:#000;border:1px solid #3a2748;border-radius:12px;padding:18px 12px;margin-bottom:13px;
+    min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+  .slot .chore{font-weight:800;font-size:18px;line-height:1.2;}
+  .slot .chore-xp{font-size:12px;font-weight:800;color:var(--gold);margin-top:5px;letter-spacing:.04em;}
+  .slot .placeholder{color:var(--dim);font-weight:700;font-size:15px;letter-spacing:.04em;}
+  .slot.rolling .chore{filter:blur(.4px);opacity:.85;}
+  .gbtns{display:flex;gap:9px;position:relative;}
+  .gbtn{flex:1;padding:14px;border:none;border-radius:12px;font-family:'Bebas Neue';font-size:21px;
+    letter-spacing:.04em;cursor:pointer;background:var(--purple);color:#0a0a0a;}
+  .gbtn.sec{background:var(--panel2);color:var(--txt);border:1px solid #3a2748;}
+  .gbtn.claim{background:var(--gold);}
+  .gbtn:disabled{opacity:.4;cursor:default;}
+  .gamble-note{font-size:10px;color:var(--dim);margin-top:10px;font-weight:600;position:relative;}
+
+  /* ===== WORKOUT ===== */
+  .days{display:flex;gap:7px;overflow-x:auto;padding:12px 0 6px;scrollbar-width:none;}
   .days::-webkit-scrollbar{display:none;}
-  .day{
-    flex:0 0 auto;min-width:46px;padding:10px 0;text-align:center;
-    background:var(--panel);border:1px solid var(--line);border-radius:13px;
-    font-weight:700;font-size:13px;color:var(--dim);transition:.15s;cursor:pointer;position:relative;
-  }
+  .day{flex:0 0 auto;min-width:46px;padding:10px 0;text-align:center;background:var(--panel);
+    border:1px solid var(--line);border-radius:13px;font-weight:700;font-size:13px;color:var(--dim);
+    transition:.15s;cursor:pointer;position:relative;}
   .day small{display:block;font-size:9px;letter-spacing:.12em;margin-top:3px;text-transform:uppercase;font-weight:600;opacity:.8;}
   .day.active{background:var(--acc);color:#0a0a0a;border-color:var(--acc);}
   .day .dot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:transparent;}
   .day.complete .dot{background:var(--acc2);}
   .day.active.complete .dot{background:#0a0a0a;}
-
-  .head2{display:flex;align-items:flex-end;justify-content:space-between;margin:22px 0 4px;}
-  .focus{font-family:'Bebas Neue';font-size:38px;line-height:1;}
+  .head2{display:flex;align-items:flex-end;justify-content:space-between;margin:14px 0 4px;}
+  .focus{font-family:'Bebas Neue';font-size:34px;line-height:1;}
   .meta{font-size:12px;color:var(--dim);font-weight:600;text-align:right;}
   .meta b{color:var(--acc);}
-
   .prog{height:5px;background:var(--panel2);border-radius:5px;margin:14px 0 4px;overflow:hidden;}
   .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s;}
-
   .ex{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px 16px 12px;margin-top:14px;}
   .ex.done{background:var(--done);border-color:#2c4a24;}
-  .ex-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .ex-name{font-weight:700;font-size:17px;line-height:1.15;}
   .ex-scheme{color:var(--dim);font-size:12px;font-weight:600;margin-top:3px;letter-spacing:.02em;}
   .ex.done .ex-scheme{color:#8fc97f;}
   .sets{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;}
-  .set{
-    width:42px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--dim);
-    cursor:pointer;transition:.12s;
-  }
+  .set{width:42px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--dim);cursor:pointer;transition:.12s;}
   .set.on{background:var(--acc);color:#0a0a0a;border-color:var(--acc);transform:scale(1.04);}
-
-  .restbar{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center;}
+  .restbar{margin-top:24px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center;}
   .restbar .lbl{font-size:11px;letter-spacing:.25em;color:var(--dim);text-transform:uppercase;font-weight:700;}
-  .timer{font-family:'Bebas Neue';font-size:60px;line-height:1;margin:6px 0;letter-spacing:.02em;}
+  .timer{font-family:'Bebas Neue';font-size:56px;line-height:1;margin:6px 0;letter-spacing:.02em;}
   .tbtns{display:flex;gap:8px;justify-content:center;}
-  .tbtns button{
-    flex:1;max-width:120px;padding:11px;border:none;border-radius:12px;font-family:'Archivo';
-    font-weight:700;font-size:14px;cursor:pointer;background:var(--panel2);color:var(--txt);border:1px solid var(--line);
-  }
+  .tbtns button{flex:1;max-width:120px;padding:11px;border:none;border-radius:12px;font-family:'Archivo';
+    font-weight:700;font-size:14px;cursor:pointer;background:var(--panel2);color:var(--txt);border:1px solid var(--line);}
   .tbtns button.go{background:var(--acc);color:#0a0a0a;border-color:var(--acc);}
-
-  .note{color:var(--dim);font-size:12px;line-height:1.5;margin:20px 2px 0;font-weight:500;}
+  .note{color:var(--dim);font-size:12px;line-height:1.5;margin:18px 2px 0;font-weight:500;}
   .reset{margin:16px auto 0;display:block;background:none;border:1px solid var(--line);color:var(--dim);
     padding:9px 16px;border-radius:11px;font-family:'Archivo';font-weight:600;font-size:12px;cursor:pointer;}
+  .hardreset{margin:10px auto 0;display:block;background:none;border:none;color:#444;font-size:11px;text-decoration:underline;cursor:pointer;}
 
-  .foot{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.92);
-    backdrop-filter:blur(14px);border-top:1px solid var(--line);
-    padding:13px 18px calc(13px + env(safe-area-inset-bottom));}
+  /* ===== FOOTER ===== */
+  .foot{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.92);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);padding:11px 18px calc(11px + env(safe-area-inset-bottom));}
   .foot .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0;}
-  .streak{font-size:12px;color:var(--dim);font-weight:600;}
-  .streak b{color:var(--acc);font-size:15px;}
-  .finishbtn{background:var(--acc);color:#0a0a0a;border:none;padding:13px 22px;border-radius:13px;
-    font-family:'Bebas Neue';font-size:20px;letter-spacing:.04em;cursor:pointer;}
+  .fl{font-size:11px;color:var(--dim);font-weight:600;line-height:1.3;}
+  .fl b{color:var(--acc);font-size:14px;}
+  .fl .frank{color:var(--gold);}
+  .finishbtn{background:var(--acc);color:#0a0a0a;border:none;padding:12px 20px;border-radius:13px;
+    font-family:'Bebas Neue';font-size:19px;letter-spacing:.04em;cursor:pointer;}
   .finishbtn.dim{background:var(--panel2);color:var(--dim);}
+
+  /* ===== TOAST / LEVELUP ===== */
+  .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translateX(-50%) translateY(-140%);
+    background:var(--panel2);border:1px solid var(--acc);color:var(--txt);padding:10px 18px;border-radius:13px;
+    font-weight:700;font-size:14px;z-index:60;transition:transform .35s cubic-bezier(.2,1.2,.3,1);
+    box-shadow:0 8px 30px rgba(0,0,0,.5);white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast .tg{color:var(--gold);}
+  .lvlup{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.78);opacity:0;pointer-events:none;transition:opacity .3s;}
+  .lvlup.show{opacity:1;pointer-events:auto;}
+  .lvlup-card{background:linear-gradient(160deg,#1c1c1c,#0e0e0e);border:1px solid var(--gold);border-radius:24px;
+    padding:34px 30px;text-align:center;max-width:300px;transform:scale(.8);transition:transform .4s cubic-bezier(.2,1.3,.3,1);
+    box-shadow:0 0 50px rgba(255,194,75,.25);}
+  .lvlup.show .lvlup-card{transform:scale(1);}
+  .lvlup .burst{font-size:50px;}
+  .lvlup .lu-k{font-size:12px;letter-spacing:.3em;color:var(--gold);font-weight:800;text-transform:uppercase;margin-top:8px;}
+  .lvlup .lu-l{font-family:'Bebas Neue';font-size:72px;line-height:.9;margin:4px 0;}
+  .lvlup .lu-r{font-size:13px;color:var(--purple);font-weight:700;margin-bottom:6px;}
+  .lvlup .lu-sub{font-size:12px;color:var(--dim);font-weight:500;}
+  .lvlup button{margin-top:20px;background:var(--gold);color:#0a0a0a;border:none;padding:12px 30px;
+    border-radius:12px;font-family:'Bebas Neue';font-size:20px;letter-spacing:.05em;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="kick">7-Day · Dumbbell + Bench</div>
+    <div class="kick">Life Grind · RPG Mode</div>
     <h1>DAILY GRIND</h1>
-    <div class="sub">Low rep · heavy · 20–30 min · 1–2 reps in reserve</div>
+    <div class="sub">Every task is XP. Show up daily. Climb the ranks.</div>
   </header>
 
-  <div class="days" id="days"></div>
-
-  <div class="head2">
-    <div class="focus" id="focus">—</div>
-    <div class="meta" id="meta"></div>
+  <!-- CHARACTER -->
+  <div class="hero">
+    <div class="hero-top">
+      <div class="avatar" id="avatar">🥚</div>
+      <div class="hero-id">
+        <div class="rank" id="rank">RANK</div>
+        <div class="lvlrow"><span class="lvl-num" id="lvlNum">1</span><span class="lvl-word">Level</span></div>
+        <div class="title" id="title">The Beginning</div>
+      </div>
+    </div>
+    <div class="xpbar"><i id="xpFill"></i></div>
+    <div class="xpmeta"><span><b id="xpCur">0</b> / <span id="xpNeed">100</span> XP</span><span class="total-xp">Total earned: <b id="xpTotal">0</b></span></div>
+    <div class="stats">
+      <div class="stat body"><div class="sv" id="stBody">0</div><div class="sn">Body</div></div>
+      <div class="stat mind"><div class="sv" id="stMind">0</div><div class="sn">Mind</div></div>
+      <div class="stat grit"><div class="sv" id="stGrit">0</div><div class="sn">Grit</div></div>
+      <div class="stat home"><div class="sv" id="stHome">0</div><div class="sn">Home</div></div>
+    </div>
   </div>
-  <div class="prog"><i id="progbar"></i></div>
 
+  <!-- DAILY HABITS -->
+  <div class="sec-h" id="habitsDate">TODAY <span class="tag" id="habitCount">0/0</span></div>
+  <div class="habits" id="habitList"></div>
+
+  <!-- GAMBLE -->
+  <div class="sec-h">The Gamble <span class="tag" style="background:var(--purple)">Bonus</span></div>
+  <div class="gamble">
+    <h3>HOUSE CHORE ROULETTE</h3>
+    <p>Roll a random big chore. Bigger effort, bigger XP. One spin per day.</p>
+    <div class="slot" id="slot"><span class="placeholder">— PULL THE LEVER —</span></div>
+    <div class="gbtns" id="gbtns">
+      <button class="gbtn" id="rollBtn">SPIN</button>
+    </div>
+    <div class="gamble-note" id="gambleNote">Resets daily. Claim only after you actually do it.</div>
+  </div>
+
+  <!-- WORKOUT -->
+  <div class="sec-h">Workout <span class="tag">+XP</span></div>
+  <div class="days" id="days"></div>
+  <div class="head2"><div class="focus" id="focus">—</div><div class="meta" id="meta"></div></div>
+  <div class="prog"><i id="progbar"></i></div>
   <div id="list"></div>
 
   <div class="restbar">
@@ -125,60 +235,88 @@
   </div>
 
   <div class="note" id="note"></div>
-  <button class="reset" id="wipe">Reset today's checkmarks</button>
+  <button class="reset" id="wipe">Reset today's workout checkmarks</button>
+  <button class="hardreset" id="hardreset">Erase ALL progress (character, levels, everything)</button>
 </div>
 
 <div class="foot">
   <div class="wrap">
-    <div class="streak">Days done this week<br><b id="streak">0</b> / 7</div>
-    <button class="finishbtn dim" id="finish">MARK DONE</button>
+    <div class="fl">LVL <b id="fLvl">1</b> · <span class="frank" id="fRank">—</span><br>Day streak <b id="fStreak">0</b></div>
+    <button class="finishbtn dim" id="finish">END DAY</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="lvlup" id="lvlup">
+  <div class="lvlup-card">
+    <div class="burst">⚡</div>
+    <div class="lu-k">Level Up</div>
+    <div class="lu-l" id="luLvl">2</div>
+    <div class="lu-r" id="luRank">—</div>
+    <div class="lu-sub" id="luSub"></div>
+    <button id="luClose">CONTINUE</button>
   </div>
 </div>
 
 <script>
+/* =========================================================
+   DATA
+========================================================= */
 const PLAN = [
   {d:"MON", focus:"PUSH", time:"~25 min", ex:[
-    {n:"Dumbbell Bench Press",s:"4 × 5"},
-    {n:"Standing Overhead Press",s:"4 × 5"},
-    {n:"Incline DB Press",s:"3 × 6"},
-    {n:"Lateral Raise",s:"2 × 10"},
-  ]},
+    {n:"Dumbbell Bench Press",s:"4 × 5"},{n:"Standing Overhead Press",s:"4 × 5"},
+    {n:"Incline DB Press",s:"3 × 6"},{n:"Lateral Raise",s:"2 × 10"}]},
   {d:"TUE", focus:"PULL", time:"~25 min", ex:[
-    {n:"Single-Arm Row (bench)",s:"4 × 5 /arm"},
-    {n:"DB Romanian Deadlift",s:"4 × 5"},
-    {n:"Chest-Supported Row",s:"3 × 6"},
-    {n:"DB Curl",s:"2 × 10"},
-  ]},
+    {n:"Single-Arm Row (bench)",s:"4 × 5 /arm"},{n:"DB Romanian Deadlift",s:"4 × 5"},
+    {n:"Chest-Supported Row",s:"3 × 6"},{n:"DB Curl",s:"2 × 10"}]},
   {d:"WED", focus:"LEGS", time:"~25 min", ex:[
-    {n:"Bulgarian Split Squat",s:"4 × 5 /leg"},
-    {n:"Goblet Squat",s:"4 × 6"},
-    {n:"DB Romanian Deadlift",s:"3 × 6"},
-    {n:"Calf Raise",s:"2 × 12"},
-  ]},
+    {n:"Bulgarian Split Squat",s:"4 × 5 /leg"},{n:"Goblet Squat",s:"4 × 6"},
+    {n:"DB Romanian Deadlift",s:"3 × 6"},{n:"Calf Raise",s:"2 × 12"}]},
   {d:"THU", focus:"MOBILITY", time:"~20 min", ex:[
-    {n:"Goblet Squat (light)",s:"2 × 10"},
-    {n:"DB Row (light)",s:"2 × 10"},
-    {n:"Push-ups",s:"2 × submax"},
-    {n:"Plank",s:"2 × 30s"},
-  ]},
+    {n:"Goblet Squat (light)",s:"2 × 10"},{n:"DB Row (light)",s:"2 × 10"},
+    {n:"Push-ups",s:"2 × submax"},{n:"Plank",s:"2 × 30s"}]},
   {d:"FRI", focus:"PUSH", time:"~25 min", ex:[
-    {n:"Standing Overhead Press",s:"4 × 5"},
-    {n:"Dumbbell Bench Press",s:"4 × 5"},
-    {n:"Arnold Press",s:"3 × 6"},
-    {n:"Overhead Triceps Ext.",s:"2 × 10"},
-  ]},
+    {n:"Standing Overhead Press",s:"4 × 5"},{n:"Dumbbell Bench Press",s:"4 × 5"},
+    {n:"Arnold Press",s:"3 × 6"},{n:"Overhead Triceps Ext.",s:"2 × 10"}]},
   {d:"SAT", focus:"PULL", time:"~25 min", ex:[
-    {n:"DB Romanian Deadlift",s:"4 × 5"},
-    {n:"Single-Arm Row (bench)",s:"4 × 5 /arm"},
-    {n:"DB Shrug",s:"3 × 8"},
-    {n:"Hammer Curl",s:"2 × 10"},
-  ]},
+    {n:"DB Romanian Deadlift",s:"4 × 5"},{n:"Single-Arm Row (bench)",s:"4 × 5 /arm"},
+    {n:"DB Shrug",s:"3 × 8"},{n:"Hammer Curl",s:"2 × 10"}]},
   {d:"SUN", focus:"FULL BODY", time:"~22 min", ex:[
-    {n:"Dumbbell Bench Press",s:"3 × 5"},
-    {n:"Single-Arm Row (bench)",s:"3 × 5 /arm"},
-    {n:"Bulgarian Split Squat",s:"3 × 5 /leg"},
-    {n:"Standing Overhead Press",s:"3 × 5"},
-  ]},
+    {n:"Dumbbell Bench Press",s:"3 × 5"},{n:"Single-Arm Row (bench)",s:"3 × 5 /arm"},
+    {n:"Bulgarian Split Squat",s:"3 × 5 /leg"},{n:"Standing Overhead Press",s:"3 × 5"}]},
+];
+
+// stat: which attribute the task trains. xp: reward.
+const HABITS = [
+  {id:"teeth_am", ic:"🪥", t:"Brush teeth — morning", xp:8,  stat:"grit"},
+  {id:"coffee",   ic:"☕", t:"Coffee / tea",            xp:6,  stat:"mind"},
+  {id:"stretch",  ic:"🧘", t:"Daily stretches",         xp:14, stat:"body"},
+  {id:"breakfast",ic:"🍳", t:"Breakfast",               xp:10, stat:"body"},
+  {id:"lunch",    ic:"🍱", t:"Pack work lunch", xp:12, stat:"grit", workOnly:true},
+  {id:"exercise", ic:"🏋️", t:"Daily exercise",          xp:25, stat:"body"},
+  {id:"beard",    ic:"🧔", t:"Trim / do beard", xp:16, stat:"grit", cycle:3},
+  {id:"dishes",   ic:"🍽️", t:"Wash the dishes",          xp:18, stat:"home"},
+  {id:"teeth_pm", ic:"🌙", t:"Brush teeth — evening",   xp:8,  stat:"grit"},
+];
+
+// Big random chores for the gamble. weight = rarity (lower = rarer = usually bigger).
+const CHORES = [
+  {t:"Clean the fridge inside & out", xp:90,  stat:"home"},
+  {t:"Scrub both bathrooms",          xp:110, stat:"home"},
+  {t:"Deep clean the kitchen",        xp:100, stat:"home"},
+  {t:"Vacuum the whole house",        xp:70,  stat:"home"},
+  {t:"Mop all the floors",            xp:65,  stat:"home"},
+  {t:"Wash all the windows",          xp:80,  stat:"home"},
+  {t:"Clean & organize the garage",   xp:130, stat:"home"},
+  {t:"Do all the laundry + fold",     xp:75,  stat:"home"},
+  {t:"Dust & wipe every surface",     xp:55,  stat:"home"},
+  {t:"Clean the oven",                xp:95,  stat:"home"},
+  {t:"Change & wash the bedsheets",   xp:50,  stat:"home"},
+  {t:"Declutter one full room",       xp:85,  stat:"home"},
+  {t:"Clean the car inside",          xp:70,  stat:"home"},
+  {t:"Wipe down all baseboards",      xp:60,  stat:"home"},
+  {t:"Deep clean the shower/tub",     xp:80,  stat:"home"},
+  {t:"Organize a closet top to bottom",xp:90, stat:"home"},
 ];
 
 const NOTES = {
@@ -186,20 +324,273 @@ const NOTES = {
   default:"Go heavy enough that rep 5 is hard, but leave 1–2 reps in the tank. Daily volume adds up — you can't grind to failure every session. Rest ~60–75s between sets."
 };
 
-// ---- state (in-memory; persists via localStorage when available) ----
-let store = {};
-try { store = JSON.parse(localStorage.getItem('dailygrind')||'{}'); } catch(e){ store = {}; }
-function save(){ try{ localStorage.setItem('dailygrind', JSON.stringify(store)); }catch(e){} }
+// RANKS — climb these as you level. {min: level needed}
+const RANKS = [
+  {min:1,  name:"Untrained",   av:"🥚", title:"The Beginning"},
+  {min:5,  name:"Novice",      av:"🐣", title:"Finding the Habit"},
+  {min:10, name:"Apprentice",  av:"🦊", title:"Building Momentum"},
+  {min:18, name:"Adept",       av:"🐺", title:"Disciplined"},
+  {min:28, name:"Veteran",     av:"🦅", title:"Forged by Routine"},
+  {min:40, name:"Elite",       av:"🦁", title:"Relentless"},
+  {min:55, name:"Master",      av:"🐉", title:"Master of the Day"},
+  {min:72, name:"Champion",    av:"👑", title:"Unbreakable"},
+  {min:92, name:"Legend",      av:"⚡", title:"Living Legend"},
+  {min:115,name:"Mythic",      av:"🌌", title:"Beyond Mortal"},
+  {min:140,name:"Ascended",    av:"☀️", title:"Ascended Grinder"},
+  {min:175,name:"GRANDMASTER", av:"🏆", title:"Peak Existence"},
+];
+const MAX_LEVEL = 200;
 
-const todayIdx = (new Date().getDay()+6)%7; // Mon=0
+// XP curve: rises steadily so the top is a multi-year (effectively lifelong) grind,
+// while early ranks come quick enough to stay motivating.
+// need(L) = round(45 * L^1.32) + 30*L
+function xpForLevel(L){ return Math.round(45*Math.pow(L,1.32)) + 30*L; }
+
+/* =========================================================
+   STATE
+========================================================= */
+let store = {};
+try { store = JSON.parse(localStorage.getItem('dailygrind_rpg')||'{}'); } catch(e){ store = {}; }
+function save(){ try{ localStorage.setItem('dailygrind_rpg', JSON.stringify(store)); }catch(e){} }
+
+// init character
+if(store.xp===undefined) store.xp=0;            // xp into current level
+if(store.level===undefined) store.level=1;
+if(store.totalXp===undefined) store.totalXp=0;
+if(!store.stats) store.stats={body:0,mind:0,grit:0,home:0};
+if(!store.habits) store.habits={};
+if(store.beardLast===undefined) store.beardLast=null; // day-count when beard last done
+if(store.dayCount===undefined) store.dayCount=0;      // total distinct days opened
+if(store.streak===undefined) store.streak=0;
+if(!store.gamble) store.gamble={day:null,rolled:null,claimed:false};
+
+const todayIdx = (new Date().getDay()+6)%7;
 let cur = todayIdx;
 
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+// ---- daily rollover ----
+(function rollover(){
+  if(store.habitDay !== todayStr()){
+    // streak logic: if yesterday had any completion, continue; else reset
+    const prevDay = store.habitDay;
+    const yesterday = (()=>{const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+    if(prevDay===yesterday && store.didSomethingToday){ store.streak=(store.streak||0)+1; }
+    else if(prevDay!==null && prevDay!==undefined){ store.streak=0; }
+    store.didSomethingToday=false;
+    store.habitDay = todayStr();
+    store.habits = {};
+    store.dayCount = (store.dayCount||0)+1;
+    store.gamble = {day:todayStr(), rolled:null, claimed:false};
+    // mark workout day not-done for fresh visual (keep weekly handled separately)
+    save();
+  }
+  if(store.gamble.day!==todayStr()) store.gamble={day:todayStr(),rolled:null,claimed:false};
+})();
+
+/* =========================================================
+   XP ENGINE
+========================================================= */
+function rankFor(level){
+  let r=RANKS[0];
+  for(const R of RANKS){ if(level>=R.min) r=R; }
+  return r;
+}
+function grantXP(amount, stat){
+  store.totalXp += amount;
+  if(stat && store.stats[stat]!==undefined) store.stats[stat]+=amount;
+  store.didSomethingToday=true;
+  let leveled=false, newRankName=null;
+  if(store.level<MAX_LEVEL){
+    store.xp += amount;
+    while(store.level<MAX_LEVEL && store.xp>=xpForLevel(store.level)){
+      store.xp -= xpForLevel(store.level);
+      const oldRank=rankFor(store.level).name;
+      store.level++;
+      leveled=true;
+      const nr=rankFor(store.level).name;
+      if(nr!==oldRank) newRankName=nr;
+    }
+    if(store.level>=MAX_LEVEL) store.xp=0;
+  }
+  save();
+  return {leveled, newRankName};
+}
+function revokeXP(amount, stat){
+  // soft revoke when unchecking — don't de-level to keep it simple & forgiving
+  store.totalXp=Math.max(0,store.totalXp-amount);
+  if(stat && store.stats[stat]!==undefined) store.stats[stat]=Math.max(0,store.stats[stat]-amount);
+  store.xp-=amount;
+  while(store.xp<0 && store.level>1){ store.level--; store.xp+=xpForLevel(store.level); }
+  if(store.xp<0) store.xp=0;
+  save();
+}
+
+/* =========================================================
+   HERO RENDER
+========================================================= */
+function renderHero(){
+  const r=rankFor(store.level);
+  document.getElementById('avatar').textContent=r.av;
+  document.getElementById('rank').textContent=r.name;
+  document.getElementById('lvlNum').textContent=store.level;
+  document.getElementById('title').textContent=r.title;
+  const need=store.level>=MAX_LEVEL?1:xpForLevel(store.level);
+  const curXp=store.level>=MAX_LEVEL?1:store.xp;
+  document.getElementById('xpCur').textContent=curXp;
+  document.getElementById('xpNeed').textContent=store.level>=MAX_LEVEL?'MAX':need;
+  document.getElementById('xpFill').style.width=(store.level>=MAX_LEVEL?100:(curXp/need*100))+'%';
+  document.getElementById('xpTotal').textContent=store.totalXp.toLocaleString();
+  document.getElementById('stBody').textContent=store.stats.body;
+  document.getElementById('stMind').textContent=store.stats.mind;
+  document.getElementById('stGrit').textContent=store.stats.grit;
+  document.getElementById('stHome').textContent=store.stats.home;
+  document.getElementById('fLvl').textContent=store.level;
+  document.getElementById('fRank').textContent=r.name;
+  document.getElementById('fStreak').textContent=store.streak||0;
+}
+
+/* =========================================================
+   FEEDBACK (toast + levelup modal)
+========================================================= */
+let toastT=null;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.innerHTML=msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),1700);
+}
+function showLevelUp(){
+  const r=rankFor(store.level);
+  document.getElementById('luLvl').textContent=store.level;
+  document.getElementById('luRank').textContent=r.name+' · '+r.title;
+  document.getElementById('luSub').textContent=store.level>=MAX_LEVEL?'You have reached the summit. Maximum level.':'Next level needs '+xpForLevel(store.level)+' XP.';
+  document.getElementById('lvlup').classList.add('show');
+  if(navigator.vibrate) navigator.vibrate([20,50,20,50,60]);
+}
+document.getElementById('luClose').onclick=()=>document.getElementById('lvlup').classList.remove('show');
+
+function award(amount,stat,label){
+  const res=grantXP(amount,stat);
+  if(res.leveled){ renderHero(); showLevelUp(); }
+  else { toast('<span class="tg">+'+amount+' XP</span> &nbsp;'+label); renderHero(); }
+  if(navigator.vibrate) navigator.vibrate(10);
+}
+
+/* =========================================================
+   HABITS
+========================================================= */
+function beardDue(){
+  // due if never done, or it's been >= cycle days since last done
+  if(store.beardLast===null) return true;
+  return (store.dayCount - store.beardLast) >= 3;
+}
+function renderHabits(){
+  const dow=new Date().getDay();
+  const isWorkday=dow>=1&&dow<=5;
+  const names=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const list=HABITS.filter(h=>{
+    if(h.workOnly && !isWorkday) return false;
+    if(h.id==='beard' && !beardDue() && !store.habits['beard']) return false; // hide until due
+    return true;
+  });
+  let done=0;
+  const hl=document.getElementById('habitList');
+  hl.innerHTML='';
+  list.forEach(h=>{
+    const on=!!store.habits[h.id];
+    if(on) done++;
+    const row=document.createElement('div');
+    row.className='habit'+(on?' on':'');
+    let dueTag='';
+    if(h.id==='beard') dueTag='<span class="due">3-day</span>';
+    if(h.id==='dishes') dueTag='<span class="due" style="color:var(--purple);border-color:var(--purple)">end of day</span>';
+    row.innerHTML=`<div class="box">${on?'✓':''}</div><div class="ic">${h.ic}</div>
+      <div class="lbl2">${h.t} ${dueTag}</div><div class="xp">+${h.xp}</div>`;
+    row.onclick=()=>toggleHabit(h);
+    hl.appendChild(row);
+  });
+  document.getElementById('habitsDate').firstChild.textContent=names[dow].toUpperCase()+' ';
+  document.getElementById('habitCount').textContent=done+'/'+list.length;
+}
+function toggleHabit(h){
+  const on=!store.habits[h.id];
+  store.habits[h.id]=on;
+  if(h.id==='beard'){ store.beardLast = on ? store.dayCount : store.beardLast; }
+  save();
+  if(on) award(h.xp,h.stat,h.t);
+  else revokeXP(h.xp,h.stat);
+  renderHabits(); renderHero();
+}
+
+/* =========================================================
+   GAMBLE
+========================================================= */
+let rolling=false;
+function renderGamble(){
+  const g=store.gamble;
+  const slot=document.getElementById('slot');
+  const btns=document.getElementById('gbtns');
+  const note=document.getElementById('gambleNote');
+  if(g.claimed){
+    slot.innerHTML=`<div class="chore">✓ ${g.rolled.t}</div><div class="chore-xp">+${g.rolled.xp} XP claimed</div>`;
+    btns.innerHTML=`<button class="gbtn sec" disabled>DONE FOR TODAY</button>`;
+    note.textContent='Nice. Fresh spin unlocks tomorrow.';
+    return;
+  }
+  if(g.rolled){
+    slot.innerHTML=`<div class="chore">${g.rolled.t}</div><div class="chore-xp">Reward: +${g.rolled.xp} XP</div>`;
+    btns.innerHTML=`<button class="gbtn sec" id="rerollBtn">RESPIN</button><button class="gbtn claim" id="claimBtn">I DID IT ✓</button>`;
+    note.textContent='Respin if you want a different one — but you only claim once per day.';
+    document.getElementById('claimBtn').onclick=claimChore;
+    document.getElementById('rerollBtn').onclick=spin;
+    return;
+  }
+  slot.innerHTML=`<span class="placeholder">— PULL THE LEVER —</span>`;
+  btns.innerHTML=`<button class="gbtn" id="rollBtn">SPIN</button>`;
+  note.textContent='Resets daily. Claim only after you actually do it.';
+  document.getElementById('rollBtn').onclick=spin;
+}
+function spin(){
+  if(rolling) return;
+  rolling=true;
+  const slot=document.getElementById('slot');
+  slot.classList.add('rolling');
+  let ticks=0;const total=18+Math.floor(Math.random()*8);
+  const iv=setInterval(()=>{
+    const c=CHORES[Math.floor(Math.random()*CHORES.length)];
+    slot.innerHTML=`<div class="chore">${c.t}</div><div class="chore-xp">Reward: +${c.xp} XP</div>`;
+    if(navigator.vibrate) navigator.vibrate(4);
+    ticks++;
+    if(ticks>=total){
+      clearInterval(iv);
+      const final=CHORES[Math.floor(Math.random()*CHORES.length)];
+      store.gamble.rolled=final; store.gamble.claimed=false; save();
+      slot.classList.remove('rolling');
+      rolling=false;
+      renderGamble();
+      if(navigator.vibrate) navigator.vibrate([10,40,30]);
+    }
+  },70);
+}
+function claimChore(){
+  const g=store.gamble;
+  if(!g.rolled||g.claimed) return;
+  g.claimed=true; save();
+  award(g.rolled.xp, g.rolled.stat, g.rolled.t);
+  renderGamble();
+}
+
+/* =========================================================
+   WORKOUT
+========================================================= */
 function setsFor(scheme){ const m=scheme.match(/^(\d+)/); return m?+m[1]:1; }
 function key(di,ei){ return `d${di}_e${ei}`; }
+const SET_XP=4; // xp per set
 
 function render(){
-  // day pills
-  const days = document.getElementById('days');
+  const days=document.getElementById('days');
   days.innerHTML='';
   PLAN.forEach((p,i)=>{
     const el=document.createElement('div');
@@ -208,76 +599,86 @@ function render(){
     el.onclick=()=>{cur=i;render();};
     days.appendChild(el);
   });
-
   const p=PLAN[cur];
   document.getElementById('focus').textContent=p.focus;
   document.getElementById('meta').innerHTML=`${p.d} · ${p.ex.length} lifts<br><b>${p.time}</b>`;
-
   const list=document.getElementById('list');
   list.innerHTML='';
-  let totalSets=0, doneSets=0;
+  let totalSets=0,doneSets=0;
   p.ex.forEach((e,ei)=>{
-    const tot=setsFor(e.s); totalSets+=tot;
-    const card=document.createElement('div'); card.className='ex';
-    const setsHtml=[];
-    let exDone=0;
+    const tot=setsFor(e.s);totalSets+=tot;
+    const card=document.createElement('div');card.className='ex';
+    const setsHtml=[];let exDone=0;
     for(let s=0;s<tot;s++){
       const on=store[key(cur,ei)+'_s'+s];
       if(on){doneSets++;exDone++;}
       setsHtml.push(`<div class="set${on?' on':''}" data-e="${ei}" data-s="${s}">${s+1}</div>`);
     }
-    if(exDone===tot) card.classList.add('done');
-    card.innerHTML=`<div class="ex-top"><div><div class="ex-name">${e.n}</div><div class="ex-scheme">${e.s}</div></div></div><div class="sets">${setsHtml.join('')}</div>`;
+    if(exDone===tot)card.classList.add('done');
+    card.innerHTML=`<div class="ex-name">${e.n}</div><div class="ex-scheme">${e.s} &nbsp;·&nbsp; +${SET_XP} XP/set</div><div class="sets">${setsHtml.join('')}</div>`;
     list.appendChild(card);
   });
-
   list.querySelectorAll('.set').forEach(b=>{
     b.onclick=()=>{
       const k=key(cur,b.dataset.e)+'_s'+b.dataset.s;
-      store[k]=!store[k]; save(); render();
-      if(navigator.vibrate) navigator.vibrate(8);
+      const wasOn=store[k];
+      store[k]=!wasOn; save();
+      if(!wasOn) award(SET_XP,'body','set done');
+      else revokeXP(SET_XP,'body');
+      render();
     };
   });
-
   document.getElementById('progbar').style.width=(totalSets?doneSets/totalSets*100:0)+'%';
-  document.getElementById('note').textContent = NOTES[p.focus]||NOTES.default;
-
-  // finish button + streak
-  const allDone = totalSets>0 && doneSets===totalSets;
+  document.getElementById('note').textContent=NOTES[p.focus]||NOTES.default;
+  const allDone=totalSets>0&&doneSets===totalSets;
   const fb=document.getElementById('finish');
-  if(store['done_'+cur]){ fb.textContent='✓ DONE'; fb.classList.remove('dim'); }
-  else { fb.textContent='MARK DONE'; fb.classList.toggle('dim',!allDone); }
-  let streak=0; for(let i=0;i<7;i++) if(store['done_'+i]) streak++;
-  document.getElementById('streak').textContent=streak;
+  if(store['done_'+cur]){fb.textContent='✓ ENDED';fb.classList.remove('dim');}
+  else{fb.textContent='END DAY';fb.classList.toggle('dim',!allDone);}
 }
 
 document.getElementById('finish').onclick=()=>{
-  store['done_'+cur]=!store['done_'+cur]; save(); render();
-  if(navigator.vibrate) navigator.vibrate([10,40,10]);
+  const wasDone=store['done_'+cur];
+  store['done_'+cur]=!wasDone; save();
+  if(!wasDone) award(30,'grit','workout complete!');
+  else revokeXP(30,'grit');
+  render();
 };
 document.getElementById('wipe').onclick=()=>{
   const p=PLAN[cur];
-  p.ex.forEach((e,ei)=>{for(let s=0;s<setsFor(e.s);s++) delete store[key(cur,ei)+'_s'+s];});
-  delete store['done_'+cur]; save(); render();
+  p.ex.forEach((e,ei)=>{for(let s=0;s<setsFor(e.s);s++){const k=key(cur,ei)+'_s'+s; if(store[k]){revokeXP(SET_XP,'body');} delete store[k];}});
+  if(store['done_'+cur]) revokeXP(30,'grit');
+  delete store['done_'+cur]; save(); render(); renderHero();
+};
+document.getElementById('hardreset').onclick=()=>{
+  if(confirm('Erase EVERYTHING — your level, rank, stats, total XP, all progress? This cannot be undone.')){
+    localStorage.removeItem('dailygrind_rpg');
+    location.reload();
+  }
 };
 
-// ---- rest timer ----
-let tLeft=60, tInt=null;
+/* =========================================================
+   REST TIMER
+========================================================= */
+let tLeft=60,tInt=null;
 const tEl=document.getElementById('timer');
 function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
-function tick(){ tLeft--; tEl.textContent=fmt(Math.max(tLeft,0));
+function tick(){tLeft--;tEl.textContent=fmt(Math.max(tLeft,0));
   if(tLeft<=0){clearInterval(tInt);tInt=null;tEl.style.color='var(--acc2)';
     if(navigator.vibrate)navigator.vibrate([20,60,20,60,20]);
-    document.getElementById('startT').textContent='Start 60s';}
-}
+    document.getElementById('startT').textContent='Start 60s';}}
 document.getElementById('startT').onclick=function(){
   if(tInt){clearInterval(tInt);tInt=null;this.textContent='Start 60s';return;}
-  if(tLeft<=0)tLeft=60; tEl.style.color='';tEl.textContent=fmt(tLeft);
-  tInt=setInterval(tick,1000); this.textContent='Pause';
-};
+  if(tLeft<=0)tLeft=60;tEl.style.color='';tEl.textContent=fmt(tLeft);
+  tInt=setInterval(tick,1000);this.textContent='Pause';};
 document.getElementById('add15').onclick=()=>{tLeft+=15;tEl.style.color='';tEl.textContent=fmt(tLeft);};
 document.getElementById('resetT').onclick=()=>{clearInterval(tInt);tInt=null;tLeft=60;tEl.style.color='';tEl.textContent='1:00';document.getElementById('startT').textContent='Start 60s';};
 
+/* =========================================================
+   BOOT
+========================================================= */
+renderHero();
+renderHabits();
+renderGamble();
 render();
 </script>
 </body>
